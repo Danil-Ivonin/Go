@@ -7,18 +7,20 @@ import (
 	"github.com/Danil-Ivonin/Go/pkg/service"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"log"
 	"os"
 )
 
 func main() {
+	logrus.SetFormatter(new(logrus.JSONFormatter))
+
 	//Configs initialization
 	if err := initConfig(); err != nil {
-		log.Fatalf("init configs error: %s", err.Error())
+		logrus.Fatalf("init configs error: %s", err.Error())
 	}
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("error loading env variables: %s", err.Error())
+		logrus.Fatalf("error loading env variables: %s", err.Error())
 	}
 
 	//db initialization
@@ -31,7 +33,7 @@ func main() {
 		Password: os.Getenv("POSTGRES_PASSWORD"),
 	})
 	if err != nil {
-		log.Fatalf("failed to initialize db: %s", err.Error())
+		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
 	//Init vars
@@ -42,7 +44,7 @@ func main() {
 
 	//Start server
 	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		log.Fatalf("error occured while running http server: %s", err.Error())
+		logrus.Fatalf("error occured while running http server: %s", err.Error())
 	}
 }
 
