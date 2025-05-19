@@ -21,6 +21,12 @@ func (r *AuthRepository) CreateUser(user todo.User) (int, error) {
 	if err := raw.Scan(&id); err != nil {
 		return 0, err
 	}
-
 	return id, nil
+}
+
+func (r *AuthRepository) GetUser(username, password string) (todo.User, error) {
+	var user todo.User
+	query := fmt.Sprintf("SELECT id FROM %s WHERE username=$1 AND password_hash=$2;", usersTable)
+	err := r.db.Get(&user, query, username, password)
+	return user, err
 }
